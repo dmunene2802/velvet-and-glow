@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Velvet & Glow — Beauty, Nails & Accessories</title>
+  <meta name="description" content="Shop hair care, nail products, makeup, body care and fashion accessories in Kenya. Pay with M-Pesa or cash on delivery." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Announcement bar -->
+  <div class="announce">
+    <p><span data-store="freeDelivery"></span> · Pay with M-Pesa or cash on delivery</p>
+  </div>
+
+  <!-- Header -->
+  <header class="header" id="top">
+    <div class="container header-inner">
+      <button class="icon-btn menu-btn" data-action="open-menu" aria-label="Open menu"><span data-icon="menu"></span></button>
+      <a href="#top" class="logo" data-action="go-home">
+        <span class="logo-mark">V</span>
+        <span class="logo-text"><strong data-store="name"></strong><small data-store="tagline"></small></span>
+      </a>
+
+      <nav class="main-nav" id="mainNav" aria-label="Categories"></nav>
+
+      <div class="header-actions">
+        <form class="search" role="search" id="searchForm">
+          <span class="search-icon" aria-hidden="true" data-icon="search"></span>
+          <input type="search" id="searchInput" placeholder="Search products or brands…" aria-label="Search products" autocomplete="off" />
+        </form>
+        <button class="icon-btn search-toggle" data-action="toggle-search" aria-label="Search"><span data-icon="search"></span></button>
+        <button class="icon-btn" data-action="open-wishlist" aria-label="Wishlist">
+          <span data-icon="heart"></span><span class="count" id="wishCount">0</span>
+        </button>
+        <button class="icon-btn" data-action="open-cart" aria-label="Cart">
+          <span data-icon="bag"></span><span class="count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">Your everyday beauty shop</p>
+          <h1>Beauty essentials,<br /><em>beautifully</em> priced.</h1>
+          <p class="lead">Hair care trusted by salons, salon-grade nail supplies, makeup, body care and accessories, all in one place. Delivered to your door or ready for pickup.</p>
+          <div class="hero-cta">
+            <a href="#shop" class="btn btn-primary" data-action="shop-all">Shop the collection <span data-icon="arrow"></span></a>
+            <a href="#categories" class="btn btn-ghost">Browse categories</a>
+          </div>
+          <ul class="hero-stats">
+            <li><strong id="statProducts">0</strong><span>Products</span></li>
+            <li><strong>5</strong><span>Categories</span></li>
+            <li><strong>M-Pesa</strong><span>& cash on delivery</span></li>
+          </ul>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="blob blob-1"></div>
+          <div class="blob blob-2"></div>
+          <div class="float-card fc-1"><span data-icon="bottle"></span><div><b>Hair Care</b><small>Growth oils & treatments</small></div></div>
+          <div class="float-card fc-2"><span data-icon="polish"></span><div><b>Gel Colours</b><small>From KES 250</small></div></div>
+          <div class="float-card fc-3"><span data-icon="gem"></span><div><b>Jewellery</b><small>From KES 20</small></div></div>
+          <div class="hero-circle">
+            <span data-icon="lipstick"></span>
+            <p>Glow<br />every day</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust strip -->
+    <section class="trust">
+      <div class="container trust-inner">
+        <div class="trust-item"><span data-icon="truck"></span><div><b>Fast delivery</b><small>Nairobi & countrywide</small></div></div>
+        <div class="trust-item"><span data-icon="phone"></span><div><b>M-Pesa ready</b><small>Or pay cash on delivery</small></div></div>
+        <div class="trust-item"><span data-icon="shield"></span><div><b>Genuine brands</b><small>Products we know and stock</small></div></div>
+        <div class="trust-item"><span data-icon="chat"></span><div><b>Friendly support</b><small>Order help on WhatsApp</small></div></div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Shop by category</p>
+            <h2>Find what you love</h2>
+          </div>
+        </div>
+        <div class="cat-grid" id="catGrid"></div>
+      </div>
+    </section>
+
+    <!-- Featured -->
+    <section class="section section-tint">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Featured</p>
+            <h2>Customer favourites</h2>
+          </div>
+          <a href="#shop" class="link-arrow" data-action="shop-all">View all products <span data-icon="arrow"></span></a>
+        </div>
+        <div class="product-grid featured-grid" id="featuredGrid"></div>
+      </div>
+    </section>
+
+    <!-- Promo banner -->
+    <section class="section">
+      <div class="container">
+        <div class="promo">
+          <div class="promo-copy">
+            <p class="eyebrow light">For nail techs & salons</p>
+            <h2>Kit out your nail station</h2>
+            <p>UV lamps, nail drills, builder gels and press-ons, from starter kits to professional models.</p>
+            <button class="btn btn-light" data-action="filter-cat" data-cat="nails" data-sub="machines">Shop nail equipment <span data-icon="arrow"></span></button>
+          </div>
+          <div class="promo-art" aria-hidden="true">
+            <span data-icon="lamp"></span><span data-icon="polish"></span><span data-icon="brush"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Shop -->
+    <section class="section shop" id="shop">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The collection</p>
+            <h2 id="shopTitle">All products</h2>
+          </div>
+        </div>
+        <div class="shop-layout">
+          <aside class="filters" id="filters" aria-label="Filters"></aside>
+          <div class="shop-main">
+            <div class="toolbar">
+              <p id="resultCount" aria-live="polite"></p>
+              <div class="toolbar-right">
+                <label class="toggle">
+                  <input type="checkbox" id="pricedOnly" />
+                  <span>Priced items only</span>
+                </label>
+                <label class="select-wrap">
+                  <span class="sr-only">Sort by</span>
+                  <select id="sortSelect">
+                    <option value="featured">Sort: Featured</option>
+                    <option value="price-asc">Price: Low to high</option>
+                    <option value="price-desc">Price: High to low</option>
+                    <option value="name">Name: A to Z</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="active-filters" id="activeFilters"></div>
+            <div class="product-grid" id="productGrid"></div>
+            <div class="empty" id="emptyState" hidden>
+              <span data-icon="search"></span>
+              <h3>No products found</h3>
+              <p>Try a different search or clear your filters.</p>
+              <button class="btn btn-primary" data-action="clear-filters">Clear filters</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section">
+      <div class="container">
+        <div class="newsletter">
+          <div>
+            <h2>Get first dibs on new stock</h2>
+            <p>Join our list for new arrivals, restocks and offers. No spam, ever.</p>
+          </div>
+          <form id="newsletterForm" class="newsletter-form" novalidate>
+            <input type="email" id="newsletterEmail" placeholder="Your email address" aria-label="Email address" required />
+            <button class="btn btn-primary" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="#top" class="logo light"><span class="logo-mark">V</span><span class="logo-text"><strong data-store="name"></strong><small data-store="tagline"></small></span></a>
+        <p>Hair care, nails, makeup, body care and accessories, all in one shop.</p>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul id="footerCats"></ul>
+      </div>
+      <div>
+        <h4>Help</h4>
+        <ul>
+          <li><a href="#" data-action="info" data-info="delivery">Delivery information</a></li>
+          <li><a href="#" data-action="info" data-info="payment">Payment options</a></li>
+          <li><a href="#" data-action="info" data-info="returns">Returns & exchanges</a></li>
+          <li><a href="#" data-action="info" data-info="pricing">About our pricing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="contact-list">
+          <li><span data-icon="pin"></span><span data-store="location"></span></li>
+          <li><span data-icon="phone"></span><a data-store-href="tel" data-store="phone"></a></li>
+          <li><span data-icon="mail"></span><a data-store-href="mailto" data-store="email"></a></li>
+          <li><span data-icon="chat"></span><a href="#" data-action="whatsapp">Chat on WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year"></span> <span data-store="name"></span>. All rights reserved.</p>
+      <p>Prices in Kenyan Shillings (KES)</p>
+    </div>
+  </footer>
+
+  <!-- Mobile menu -->
+  <div class="overlay" id="menuOverlay" data-action="close-all"></div>
+  <aside class="drawer drawer-left" id="menuDrawer" aria-label="Menu" aria-hidden="true">
+    <div class="drawer-head">
+      <h3>Menu</h3>
+      <button class="icon-btn" data-action="close-all" aria-label="Close menu"><span data-icon="x"></span></button>
+    </div>
+    <div class="drawer-body" id="mobileNav"></div>
+  </aside>
+
+  <!-- Cart drawer -->
+  <aside class="drawer" id="cartDrawer" aria-label="Shopping cart" aria-hidden="true">
+    <div class="drawer-head">
+      <h3>Your cart <span id="cartHeadCount"></span></h3>
+      <button class="icon-btn" data-action="close-all" aria-label="Close cart"><span data-icon="x"></span></button>
+    </div>
+    <div class="drawer-body" id="cartBody"></div>
+    <div class="drawer-foot" id="cartFoot"></div>
+  </aside>
+
+  <!-- Wishlist drawer -->
+  <aside class="drawer" id="wishDrawer" aria-label="Wishlist" aria-hidden="true">
+    <div class="drawer-head">
+      <h3>Wishlist</h3>
+      <button class="icon-btn" data-action="close-all" aria-label="Close wishlist"><span data-icon="x"></span></button>
+    </div>
+    <div class="drawer-body" id="wishBody"></div>
+  </aside>
+
+  <!-- Modal (product / checkout / success / info) -->
+  <div class="modal-wrap" id="modalWrap" aria-hidden="true">
+    <div class="modal-backdrop" data-action="close-modal"></div>
+    <div class="modal" role="dialog" aria-modal="true" id="modal">
+      <button class="icon-btn modal-close" data-action="close-modal" aria-label="Close"><span data-icon="x"></span></button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toasts" aria-live="polite"></div>
+
+  <script src="js/products.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
