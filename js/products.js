@@ -22,6 +22,14 @@ const STORE = {
     { id: "country", label: "Countrywide delivery",    fee: 350 },
   ],
   freeDeliveryOver: 3000, // free delivery (not pickup) above this subtotal
+  // M-Pesa payment details shown at checkout.
+  // Leave `number` empty to hide the pay-now instructions (customers are then
+  // told you'll send payment details when you confirm their order).
+  mpesa: {
+    type: "till",            // "till" (Buy Goods & Services) or "paybill"
+    number: "",              // e.g. "123456"
+    name: "VELVET & GLOW",   // business name customers see when paying
+  },
 };
 
 const HAIR_SIZES = ["Small", "Medium", "Large", "Super Large"];

@@ -469,8 +469,12 @@
   }
 
   /* ---------- Checkout ---------- */
+  const mpesaReady = () => !!(STORE.mpesa && String(STORE.mpesa.number || "").trim());
+  let checkoutOrderNo = null;
+
   function openCheckout() {
     if (!state.cart.length) { toast("Your cart is empty"); return; }
+    checkoutOrderNo = "VG-" + Date.now().toString(36).toUpperCase().slice(-6);
     const saved = store.get("vg_customer", {});
     const html = `<div class="checkout">
       <form class="co-form" id="checkoutForm" novalidate>
@@ -498,9 +502,20 @@
         <fieldset>
           <legend>Payment</legend>
           <div class="radio-cards">
-            <label class="radio-card"><input type="radio" name="payment" value="M-Pesa" checked /><div><b>M-Pesa</b><small>We'll send payment details when we confirm your order</small></div></label>
+            <label class="radio-card"><input type="radio" name="payment" value="M-Pesa" checked /><div><b>M-Pesa</b><small>${mpesaReady() ? `Pay now via Lipa na M-Pesa ${STORE.mpesa.type === "paybill" ? "Paybill" : "Till"}` : "We'll send payment details when we confirm your order"}</small></div></label>
             <label class="radio-card"><input type="radio" name="payment" value="Cash on delivery" /><div><b>Cash on delivery</b><small>Pay when your order arrives</small></div></label>
           </div>
+          ${mpesaReady() ? `
+          <div class="mpesa-panel" id="mpesaPanel">
+            <div class="mpesa-head"><span class="mpesa-logo">M-PESA</span><b>How to pay</b></div>
+            <ol class="mpesa-steps" id="mpesaSteps"></ol>
+            <div class="field" id="codeField">
+              <label for="coCode">M-Pesa confirmation code</label>
+              <input id="coCode" name="mpesaCode" maxlength="12" placeholder="e.g. SKL4XY9ABC" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              <span class="err">Enter the 10-character code from your M-Pesa SMS</span>
+              <small class="hint" id="codeHint"></small>
+            </div>
+          </div>` : ""}
         </fieldset>
         <div class="field"><label for="coNotes">Order notes <span style="color:var(--muted);font-weight:400">(optional)</span></label><textarea id="coNotes" name="notes" placeholder="Shade, scent, preferred delivery time…"></textarea></div>
         <button class="btn btn-primary btn-block" type="submit" id="placeOrder">Place order</button>
@@ -532,6 +547,48 @@
       <div class="sum-row"><span>Delivery</span><span>${t.delivery === 0 ? "Free" : money(t.delivery)}</span></div>
       <div class="sum-row total"><span>Total</span><span>${money(t.total)}${t.unpriced ? " +" : ""}</span></div>
       ${t.unpriced ? `<p class="note">+ ${t.unpriced} item${t.unpriced > 1 ? "s" : ""} priced on request. We'll confirm the final total with you.</p>` : ""}`;
+    renderMpesa();
+  }
+
+  /** Code is required only when the full amount is known up front. */
+  const codeRequired = (t) => t.unpriced === 0 && t.total > 0;
+
+  function renderMpesa() {
+    const panel = $("#mpesaPanel");
+    if (!panel) return;
+    const pay = $("#checkoutForm input[name=payment]:checked")?.value;
+    panel.hidden = pay !== "M-Pesa";
+    if (panel.hidden) return;
+
+    const t = totals(selectedDelivery());
+    const m = STORE.mpesa;
+    const copyBtn = (v, what) => `<button type="button" class="copy" data-action="copy" data-copy="${esc(v)}" data-what="${esc(what)}">Copy</button>`;
+    const amountStep = t.total > 0
+      ? `<li>Amount: <b>${money(t.total)}</b> ${copyBtn(t.total, "Amount")}</li>`
+      : `<li>Amount: <b>to be confirmed</b>. We'll send you the total</li>`;
+    const steps = m.type === "paybill"
+      ? [`<li>Open <b>M-Pesa</b> → <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>`,
+         `<li>Business number: <b>${esc(m.number)}</b> ${copyBtn(m.number, "Business number")}</li>`,
+         `<li>Account number: <b>${esc(checkoutOrderNo)}</b> ${copyBtn(checkoutOrderNo, "Account number")}</li>`,
+         amountStep]
+      : [`<li>Open <b>M-Pesa</b> → <b>Lipa na M-Pesa</b> → <b>Buy Goods and Services</b></li>`,
+         `<li>Till number: <b>${esc(m.number)}</b> ${copyBtn(m.number, "Till number")}</li>`,
+         amountStep];
+    steps.push(`<li>Enter your PIN and confirm. It should show <b>${esc(m.name)}</b></li>`);
+    steps.push(`<li>Type the confirmation code from your M-Pesa SMS below</li>`);
+    $("#mpesaSteps").innerHTML = steps.join("");
+
+    const label = $("#codeField label");
+    const hint = $("#codeHint");
+    if (codeRequired(t)) {
+      label.textContent = "M-Pesa confirmation code";
+      hint.textContent = "We'll check this code against our M-Pesa records before dispatching your order.";
+    } else {
+      label.innerHTML = `M-Pesa confirmation code <span style="color:var(--muted);font-weight:400">(optional)</span>`;
+      hint.textContent = t.total > 0
+        ? `Your cart has items priced on request. You can pay ${money(t.total)} now for the priced items, or leave this blank and we'll send you the full total to pay.`
+        : "Leave this blank. We'll send you the total to pay once we confirm prices.";
+    }
   }
 
   function validPhone(v) { return /^(?:\+?254|0)(7|1)\d{8}$/.test(v.replace(/[\s-]/g, "")); }
@@ -539,12 +596,16 @@
   function submitOrder(form) {
     const data = Object.fromEntries(new FormData(form));
     const pickup = data.delivery === "pickup";
+    const t = totals(data.delivery);
+    const payNow = data.payment === "M-Pesa" && mpesaReady();
+    const code = (data.mpesaCode || "").replace(/\s/g, "").toUpperCase();
     const checks = [
       ["coName", data.name.trim().length >= 2],
       ["coPhone", validPhone(data.phone)],
       ["coEmail", !data.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)],
       ["coAddress", pickup || data.address.trim().length >= 4],
     ];
+    if (payNow) checks.push(["coCode", code ? /^[A-Z0-9]{10}$/.test(code) : !codeRequired(t)]);
     let firstBad = null;
     checks.forEach(([id, ok]) => {
       $(`#${id}`).closest(".field").classList.toggle("invalid", !ok);
@@ -553,8 +614,10 @@
     if (firstBad) { firstBad.focus(); return; }
 
     store.set("vg_customer", { name: data.name, phone: data.phone, email: data.email, address: data.address });
-    const t = totals(data.delivery);
-    const orderNo = "VG-" + Date.now().toString(36).toUpperCase().slice(-6);
+    const orderNo = checkoutOrderNo || "VG-" + Date.now().toString(36).toUpperCase().slice(-6);
+    const paymentText = !payNow ? data.payment
+      : code ? `M-Pesa (paid, code ${code})`
+      : "M-Pesa (will pay once total is confirmed)";
     const deliveryOpt = STORE.delivery.find((d) => d.id === data.delivery);
     const lines = state.cart.map((i) => {
       const p = BY_ID[i.id];
@@ -567,7 +630,7 @@
       `Subtotal: ${money(t.subtotal)}`,
       `Delivery: ${deliveryOpt.label} (${t.delivery === 0 ? "Free" : money(t.delivery)})`,
       `Total: ${money(t.total)}${t.unpriced ? " + items priced on request" : ""}`,
-      `Payment: ${data.payment}`, ``,
+      `Payment: ${paymentText}`, ``,
       `Name: ${data.name}`, `Phone: ${data.phone}`,
       pickup ? `Collection: Store pickup` : `Address: ${data.address}`,
       data.notes ? `Notes: ${data.notes}` : "",
@@ -584,12 +647,14 @@
     openModal(`<div class="success">
       <div class="success-icon">${icon("check")}</div>
       <h2>Thank you, ${esc(data.name.split(" ")[0])}!</h2>
-      <p>Your order has been received. Send it to us on WhatsApp so we can confirm it right away.</p>
+      <p>${payNow && code
+        ? "Your order and M-Pesa code have been received. Send the order to us on WhatsApp. We'll verify your payment and confirm right away."
+        : "Your order has been received. Send it to us on WhatsApp so we can confirm it right away."}</p>
       <div class="order-box">
         <div class="row"><span>Order number</span><b>${orderNo}</b></div>
         <div class="row"><span>Items</span><span>${t.items}</span></div>
         <div class="row"><span>Delivery</span><span>${esc(deliveryOpt.label)}</span></div>
-        <div class="row"><span>Payment</span><span>${esc(data.payment)}</span></div>
+        <div class="row"><span>Payment</span><span>${esc(paymentText)}</span></div>
         <div class="row"><span>Total</span><b>${money(t.total)}${t.unpriced ? " + TBC items" : ""}</b></div>
       </div>
       <div class="success-actions">
@@ -605,7 +670,9 @@
       <ul>${STORE.delivery.map((d) => `<li><b>${esc(d.label)}:</b> ${d.fee ? money(d.fee) : "Free"}</li>`).join("")}
       <li>Free delivery on orders over ${money(STORE.freeDeliveryOver)}.</li></ul>
       <p>We'll confirm your delivery time when we call or message you about your order.</p>`],
-    payment: ["Payment options", `<ul><li><b>M-Pesa:</b> we send payment details when we confirm your order.</li><li><b>Cash on delivery:</b> pay when your order arrives.</li></ul><p>We'll never ask for your M-Pesa PIN.</p>`],
+    payment: ["Payment options", `<ul><li><b>M-Pesa:</b> ${mpesaReady()
+      ? `pay at checkout via Lipa na M-Pesa ${STORE.mpesa.type === "paybill" ? `Paybill <b>${esc(STORE.mpesa.number)}</b> (account: your order number)` : `Till <b>${esc(STORE.mpesa.number)}</b>`}, then enter the confirmation code. We verify every payment before dispatch.`
+      : "we send payment details when we confirm your order."}</li><li><b>Cash on delivery:</b> pay when your order arrives.</li></ul><p>We'll never ask for your M-Pesa PIN.</p>`],
     returns: ["Returns & exchanges", `<p>If an item arrives damaged or isn't what you ordered, contact us within 48 hours and we'll arrange an exchange. For hygiene reasons, opened beauty and cosmetic products can't be returned.</p>`],
     pricing: ["About our pricing", `<p>Many products come in several sizes, designs or quality levels, so they show a "From" price. Pick the option you want on the product page to see its exact price.</p><p>Items marked <b>Price on request</b> can still be ordered. We'll confirm the price with you before your order is dispatched.</p>`],
   };
@@ -685,6 +752,13 @@
         break;
       }
       case "info": e.preventDefault(); openInfo(t.dataset.info); break;
+      case "copy": {
+        const v = String(t.dataset.copy);
+        const done = () => toast(`${t.dataset.what || "Copied"} copied`);
+        if (navigator.clipboard) navigator.clipboard.writeText(v).then(done, () => toast("Couldn't copy. Please type it in."));
+        else toast("Couldn't copy. Please type it in.");
+        break;
+      }
       case "whatsapp":
         e.preventDefault();
         window.open(`https://wa.me/${STORE.whatsapp}?text=${encodeURIComponent(`Hello ${STORE.name}! I have a question.`)}`, "_blank", "noopener");
@@ -717,6 +791,7 @@
   // Checkout form (delegated since it's rendered dynamically)
   document.addEventListener("change", (e) => {
     if (e.target.name === "delivery" && e.target.closest("#checkoutForm")) { renderSummary(); toggleAddress(); }
+    if (e.target.name === "payment" && e.target.closest("#checkoutForm")) renderMpesa();
   });
   document.addEventListener("input", (e) => {
     const f = e.target.closest("#checkoutForm .field.invalid");
