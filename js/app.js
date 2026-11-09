@@ -569,12 +569,14 @@
     const steps = m.type === "paybill"
       ? [`<li>Open <b>M-Pesa</b> → <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>`,
          `<li>Business number: <b>${esc(m.number)}</b> ${copyBtn(m.number, "Business number")}</li>`,
-         `<li>Account number: <b>${esc(checkoutOrderNo)}</b> ${copyBtn(checkoutOrderNo, "Account number")}</li>`,
+         `<li>Account number: <b>${esc(m.account || checkoutOrderNo)}</b> ${copyBtn(m.account || checkoutOrderNo, "Account number")}</li>`,
          amountStep]
       : [`<li>Open <b>M-Pesa</b> → <b>Lipa na M-Pesa</b> → <b>Buy Goods and Services</b></li>`,
          `<li>Till number: <b>${esc(m.number)}</b> ${copyBtn(m.number, "Till number")}</li>`,
          amountStep];
-    steps.push(`<li>Enter your PIN and confirm. It should show <b>${esc(m.name)}</b></li>`);
+    steps.push(m.name
+      ? `<li>Enter your PIN and confirm. It should show <b>${esc(m.name)}</b></li>`
+      : `<li>Enter your PIN and confirm</li>`);
     steps.push(`<li>Type the confirmation code from your M-Pesa SMS below</li>`);
     $("#mpesaSteps").innerHTML = steps.join("");
 
@@ -671,7 +673,7 @@
       <li>Free delivery on orders over ${money(STORE.freeDeliveryOver)}.</li></ul>
       <p>We'll confirm your delivery time when we call or message you about your order.</p>`],
     payment: ["Payment options", `<ul><li><b>M-Pesa:</b> ${mpesaReady()
-      ? `pay at checkout via Lipa na M-Pesa ${STORE.mpesa.type === "paybill" ? `Paybill <b>${esc(STORE.mpesa.number)}</b> (account: your order number)` : `Till <b>${esc(STORE.mpesa.number)}</b>`}, then enter the confirmation code. We verify every payment before dispatch.`
+      ? `pay at checkout via Lipa na M-Pesa ${STORE.mpesa.type === "paybill" ? `Paybill <b>${esc(STORE.mpesa.number)}</b>, account <b>${esc(STORE.mpesa.account || "your order number")}</b>` : `Till <b>${esc(STORE.mpesa.number)}</b>`}, then enter the confirmation code. We verify every payment before dispatch.`
       : "we send payment details when we confirm your order."}</li><li><b>Cash on delivery:</b> pay when your order arrives.</li></ul><p>We'll never ask for your M-Pesa PIN.</p>`],
     returns: ["Returns & exchanges", `<p>If an item arrives damaged or isn't what you ordered, contact us within 48 hours and we'll arrange an exchange. For hygiene reasons, opened beauty and cosmetic products can't be returned.</p>`],
     pricing: ["About our pricing", `<p>Many products come in several sizes, designs or quality levels, so they show a "From" price. Pick the option you want on the product page to see its exact price.</p><p>Items marked <b>Price on request</b> can still be ordered. We'll confirm the price with you before your order is dispatched.</p>`],

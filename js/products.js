@@ -26,9 +26,10 @@ const STORE = {
   // Leave `number` empty to hide the pay-now instructions (customers are then
   // told you'll send payment details when you confirm their order).
   mpesa: {
-    type: "till",            // "till" (Buy Goods & Services) or "paybill"
-    number: "",              // e.g. "123456"
-    name: "VELVET & GLOW",   // business name customers see when paying
+    type: "paybill",         // "till" (Buy Goods & Services) or "paybill"
+    number: "247247",        // Till or Paybill (business) number
+    account: "0715362083",   // Paybill only: fixed account number. Leave "" to use the order number.
+    name: "",                // name customers see when confirming, e.g. "VELVET & GLOW" ("" to hide)
   },
 };
 
