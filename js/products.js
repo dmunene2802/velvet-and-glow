@@ -11,7 +11,7 @@ const STORE = {
   tagline: "Beauty · Nails · Accessories",
   currency: "KES",
   // Placeholder contact details — replace with the shop's real details.
-  whatsapp: "254700000000",          // international format, no "+"
+  whatsapp: "254715362083",          // international format, no "+"
   phone: "+254 700 000 000",
   email: "hello@velvetandglow.co.ke",
   location: "Nairobi, Kenya",
