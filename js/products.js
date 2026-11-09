@@ -12,7 +12,7 @@ const STORE = {
   currency: "KES",
   // Placeholder contact details — replace with the shop's real details.
   whatsapp: "254715362083",          // international format, no "+"
-  phone: "+254 700 000 000",
+  phone: "+254 715 362 083",
   email: "hello@velvetandglow.co.ke",
   location: "Nairobi, Kenya",
   // Placeholder delivery options — adjust to the shop's real fees.
